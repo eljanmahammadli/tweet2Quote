@@ -8,6 +8,11 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 load_dotenv()
 
+SLEEP = int(environ['SLEEP'])
+SCREEN_NAME = environ['SCREEN_NAME']
+TEMPLATE_NUM = environ['TEMPLATE_NUM']
+template = f'imgs\\template{TEMPLATE_NUM}.jpg'
+
 
 def auth_twitter():
 
@@ -24,21 +29,21 @@ def auth_twitter():
     return api
 
 
-def getLastId():
-    with open('lastId.txt') as f:
+def getLastID():
+    with open('lastID.txt') as f:
         lines = f.readlines()
     return str(lines[0])
 
 
-def setLastId(id):
-    with open('lastId.txt', 'w') as f:
+def setLastID(id):
+    with open('lastID.txt', 'w') as f:
         f.write(str(id))
 
 
 def getInfo(api):
 
     info = []
-    last_id = getLastId()
+    last_id = getLastID()
 
     mentions = api.mentions_timeline(
         since_id=last_id,
@@ -84,7 +89,7 @@ def textWrap(text, font, max_width):
 
 def getLines(text):
     # open the background file
-    img = Image.open('imgs\\template2.jpg')
+    img = Image.open(template)
 
     # size() returns a tuple of (width, height)
     image_size = img.size
@@ -96,34 +101,33 @@ def getLines(text):
     # get shorter lines
     lines = textWrap(text, font, image_size[0])
     # ['This could be a single line text ', 'but its too long to fit in one. ']
-    print(lines)
+    # print(lines)
     return lines
 
 
 def drawImage(mention):
 
     # download profile picture
-    ppimg = requests.get(url=mention['img_url'])
+    pp_req = requests.get(url=mention['img_url'])
     with open(f"imgs\{mention['user_id']}.jpg", "wb") as f:
-        f.write(ppimg.content)
-
-    # write text
-    # width = 1080
-    # height = 1080
+        f.write(pp_req.content)
 
     font_main = ImageFont.truetype("fonts\TT Firs Regular.ttf", size=50)
     font_name = ImageFont.truetype("fonts\TT Firs Medium.ttf", size=40)
     font_user_name = ImageFont.truetype("fonts\TT Firs Italic.ttf", size=30)
 
+    # write text
+    # width = 1080
+    # height = 1080
     # img = Image.new('RGB', (width, height), color='black')
-    bg = Image.open('imgs\\template2.jpg')
+    bg = Image.open(template)
 
     imgDraw = ImageDraw.Draw(bg)
 
     # prepare quote
     idx = mention['text'].lower().index('comment2quote')
     quote = mention['text'][:idx-1] + mention['text'][idx+14:]
-    quote = quote.replace('@elcanmhmmdl', '')
+    quote = quote.replace(f'@{SCREEN_NAME}', '')
     quote = quote.strip()
 
     # split lines
@@ -186,7 +190,7 @@ def main():
                     filename=f'imgs\{mention["id"]}.jpg',
                 )
 
-                setLastId(id=mention['id'])
+                setLastID(id=mention['id'])
 
                 print(mention)
 
@@ -195,7 +199,7 @@ def main():
                 remove(f'imgs\{mention["id"]}.jpg')
 
         print("Sleeping for a minute...")
-        sleep(60)
+        sleep(SLEEP*60)
 
 
 if __name__ == '__main__':
