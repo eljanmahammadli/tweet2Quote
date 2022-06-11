@@ -24,24 +24,6 @@ def auth_twitter():
     return api
 
 
-def get_replies(api, screen_name, tweet_id):
-
-    replies = []
-    replies_clean = []
-    for tweet in tweepy.Cursor(api.search_tweets, q='to:'+screen_name, result_type='recent', timeout=999999).items(1000):
-        if hasattr(tweet, 'in_reply_to_status_id_str'):
-            if (tweet.in_reply_to_status_id_str == tweet_id):
-                replies.append(tweet)
-
-    for tweet in replies:
-        row = {'user': tweet.user.screen_name,
-               'text': tweet.text.replace('\n', ' '),
-               'id': tweet.id_str}
-        replies_clean.append(row)
-
-    return replies_clean
-
-
 def getLastId():
     with open('lastId.txt') as f:
         lines = f.readlines()
@@ -214,14 +196,6 @@ def main():
 
         print("Sleeping for a minute...")
         sleep(60)
-
-
-def test():
-    # Courage isn't having the strength to go
-    mention = {'id': 1534181445299740674, 'user_id': 2401290224, 'text': "Courage isn't having the strength Courage isn't having the strength Courage isn't having the strength to go on - it is going on when you don't have strength.",
-               'user_name': 'Elcan Məhəmmədli', 'user_screen_name': 'eljanmahammadli', 'img_url': 'http://pbs.twimg.com/profile_images/1533503948719628288/tkxiJ5F3.jpg'}
-
-    drawImage(mention)
 
 
 if __name__ == '__main__':

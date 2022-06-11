@@ -2,3 +2,4 @@ __pycache__
 imgs/reference.jpg
 .env
 steps.txt
+test.py
