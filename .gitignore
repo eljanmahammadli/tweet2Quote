@@ -1,5 +1,6 @@
-__pycache__
+__pycache__/
 imgs/reference.jpg
 .env
 steps.txt
 test.py
+venv/
