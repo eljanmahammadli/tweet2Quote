@@ -37,7 +37,7 @@ def setLastId(id):
 
 def getInfo(api):
 
-    data = []
+    info = []
     last_id = getLastId()
 
     mentions = api.mentions_timeline(
@@ -45,14 +45,14 @@ def getInfo(api):
         tweet_mode='extended')
 
     for mention in mentions:
-        data.append({'id': mention.id,
+        info.append({'id': mention.id,
                      'user_id': mention.user.id,
                      'text': mention.full_text,
                      'user_name': mention.user.name,
                      'user_screen_name': mention.user.screen_name,
                      'img_url': mention.user.profile_image_url.replace('_normal', '')})
 
-    return data
+    return info
 
 
 def textWrap(text, font, max_width):
@@ -121,9 +121,9 @@ def drawImage(mention):
     imgDraw = ImageDraw.Draw(bg)
 
     # prepare quote
-    mention['text'] = mention['text'].replace('#comment2Quote', '')
-    mention['text'] = mention['text'].replace('@elcanmhmmdl', '')
-    quote = f'{mention["text"]}'
+    idx = mention['text'].lower().index('comment2quote')
+    quote = mention['text'][:idx-1] + mention['text'][idx+14:]
+    quote = quote.replace('@elcanmhmmdl', '')
     quote = quote.strip()
 
     # split lines
@@ -192,7 +192,7 @@ def main():
 
                 # delete imgs
                 remove(f'imgs\{mention["user_id"]}.jpg')
-                # remove(f'imgs\{mention["id"]}.jpg')
+                remove(f'imgs\{mention["id"]}.jpg')
 
         print("Sleeping for a minute...")
         sleep(60)
