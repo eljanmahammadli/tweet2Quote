@@ -30,13 +30,13 @@ def auth_twitter():
 
 
 def getLastID():
-    with open('lastID.txt') as f:
+    with open('lastId.txt') as f:
         lines = f.readlines()
     return str(lines[0])
 
 
 def setLastID(id):
-    with open('lastID.txt', 'w') as f:
+    with open('lastId.txt', 'w') as f:
         f.write(str(id))
 
 
