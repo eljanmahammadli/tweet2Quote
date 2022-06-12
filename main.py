@@ -109,7 +109,7 @@ def drawImage(mention):
 
     # download profile picture
     pp_req = requests.get(url=mention['img_url'])
-    with open(f"imgs\{mention['user_id']}.jpg", "wb") as f:
+    with open(f"imgs\\{mention['user_id']}.jpg", "wb") as f:
         f.write(pp_req.content)
 
     font_main = ImageFont.truetype("fonts\TT Firs Regular.ttf", size=50)
@@ -153,7 +153,7 @@ def drawImage(mention):
     imgDraw.text((223, 603+h), f"@{mention['user_screen_name']}",
                  font=font_user_name, fill=(255, 255, 255))
 
-    pp = Image.open(f"imgs\{mention['user_id']}.jpg")
+    pp = Image.open(f"imgs\\{mention['user_id']}.jpg")
     pp = pp.resize((110, 110))
 
     # mask circle
@@ -167,7 +167,7 @@ def drawImage(mention):
 
     back_im = bg.copy()
     back_im.paste(pp, (99, 550+h), mask_im_blur)
-    back_im.save(f'imgs\{mention["id"]}.jpg', quality=95)
+    back_im.save(f'imgs\\{mention["id"]}.jpg', quality=95)
 
 
 def main():
@@ -187,7 +187,7 @@ def main():
                 api.update_status_with_media(
                     status=f'@{mention["user_screen_name"]} Here is your quote!',
                     in_reply_to_status_id=mention['id'],
-                    filename=f'imgs\{mention["id"]}.jpg',
+                    filename=f'imgs\\{mention["id"]}.jpg',
                 )
 
                 setLastID(id=mention['id'])
@@ -195,8 +195,8 @@ def main():
                 print(mention)
 
                 # delete imgs
-                remove(f'imgs\{mention["user_id"]}.jpg')
-                remove(f'imgs\{mention["id"]}.jpg')
+                remove(f'imgs\\{mention["user_id"]}.jpg')
+                remove(f'imgs\\{mention["id"]}.jpg')
 
         print("Sleeping for a minute...")
         sleep(SLEEP*60)
