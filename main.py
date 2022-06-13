@@ -97,7 +97,7 @@ def getLines(text):
     image_size = img.size
 
     # create the ImageFont instance
-    font_file_path = 'TT Firs Regular.ttf'
+    font_file_path = os.path.join(fonts_dir, 'TT Firs Regular.ttf')
     font = ImageFont.truetype(font_file_path, size=50, encoding="unic")
 
     # get shorter lines
@@ -115,7 +115,6 @@ def drawImage(mention):
     with open(pp_dir, "wb") as f:
         f.write(pp_req.content)
 
-    os.path.join(curr_dir, 'imgs', f"{mention['user_id']}.jpg")
 
     font_main = ImageFont.truetype(os.path.join(fonts_dir, 'TT Firs Regular.ttf'), size=50)
     font_name = ImageFont.truetype(os.path.join(fonts_dir, 'TT Firs Medium.ttf'), size=40)
