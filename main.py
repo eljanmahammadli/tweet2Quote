@@ -12,7 +12,7 @@ curr_dir = os.path.abspath(os.getcwd())
 SLEEP = int(os.environ['SLEEP'])
 SCREEN_NAME = os.environ['SCREEN_NAME']
 TEMPLATE_NUM = os.environ['TEMPLATE_NUM']
-template = os.path.join(curr_dir, 'imgs', 'template{TEMPLATE_NUM}.jpg')
+template = os.path.join(curr_dir, 'imgs', f'template{TEMPLATE_NUM}.jpg')
 fonts_dir = os.path.join(curr_dir, 'fonts')
 
 
