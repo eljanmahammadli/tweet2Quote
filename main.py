@@ -1,25 +1,27 @@
 
+import os
 import tweepy
 import requests
 from time import sleep
-from os import environ, remove
 from dotenv import load_dotenv
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 load_dotenv()
+curr_dir = os.path.abspath(os.getcwd())
 
-SLEEP = int(environ['SLEEP'])
-SCREEN_NAME = environ['SCREEN_NAME']
-TEMPLATE_NUM = environ['TEMPLATE_NUM']
-template = f'imgs\\template{TEMPLATE_NUM}.jpg'
+SLEEP = int(os.environ['SLEEP'])
+SCREEN_NAME = os.environ['SCREEN_NAME']
+TEMPLATE_NUM = os.environ['TEMPLATE_NUM']
+template = os.path.join(curr_dir, f'template{TEMPLATE_NUM}.jpg')
+fonts_dir = os.path.join(curr_dir, 'fonts')
 
 
 def auth_twitter():
 
-    CONSUMER_KEY = environ['CONSUMER_KEY']
-    CONSUMER_SECRET = environ['CONSUMER_SECRET']
-    ACCESS_TOKEN = environ['ACCESS_TOKEN']
-    ACCESS_SECRET = environ['ACCESS_SECRET']
+    CONSUMER_KEY = os.environ['CONSUMER_KEY']
+    CONSUMER_SECRET = os.environ['CONSUMER_SECRET']
+    ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
+    ACCESS_SECRET = os.environ['ACCESS_SECRET']
 
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
@@ -109,12 +111,15 @@ def drawImage(mention):
 
     # download profile picture
     pp_req = requests.get(url=mention['img_url'])
-    with open(f"imgs\\{mention['user_id']}.jpg", "wb") as f:
+    pp_dir = os.path.join(curr_dir, 'imgs', f"{mention['user_id']}.jpg")
+    with open(pp_dir, "wb") as f:
         f.write(pp_req.content)
 
-    font_main = ImageFont.truetype("TT Firs Regular.ttf", size=50)
-    font_name = ImageFont.truetype("TT Firs Medium.ttf", size=40)
-    font_user_name = ImageFont.truetype("TT Firs Italic.ttf", size=30)
+    os.path.join(curr_dir, 'imgs', f"{mention['user_id']}.jpg")
+
+    font_main = ImageFont.truetype(os.path.join(fonts_dir, 'TT Firs Regular.ttf'), size=50)
+    font_name = ImageFont.truetype(os.path.join(fonts_dir, 'TT Firs Medium.ttf'), size=40)
+    font_user_name = ImageFont.truetype(os.path.join(fonts_dir, 'TT Firs Italic.ttf'), size=30)
 
     # write text
     # width = 1080
@@ -153,7 +158,7 @@ def drawImage(mention):
     imgDraw.text((223, 603+h), f"@{mention['user_screen_name']}",
                  font=font_user_name, fill=(255, 255, 255))
 
-    pp = Image.open(f"imgs\\{mention['user_id']}.jpg")
+    pp = Image.open(pp_dir)
     pp = pp.resize((110, 110))
 
     # mask circle
@@ -167,7 +172,8 @@ def drawImage(mention):
 
     back_im = bg.copy()
     back_im.paste(pp, (99, 550+h), mask_im_blur)
-    back_im.save(f'imgs\\{mention["id"]}.jpg', quality=95)
+    back_im_dir = os.path.join(curr_dir, 'imgs', f"{mention['id']}.jpg")
+    back_im.save(back_im_dir, quality=95)
 
 
 def main():
@@ -183,11 +189,13 @@ def main():
             if '#comment2quote' in mention['text'].lower():
 
                 drawImage(mention)
+                pp_dir = os.path.join(curr_dir, 'imgs', f"{mention['user_id']}.jpg")
+                back_im_dir = os.path.join(curr_dir, 'imgs', f"{mention['id']}.jpg")
 
                 api.update_status_with_media(
                     status=f'@{mention["user_screen_name"]} Here is your quote!',
                     in_reply_to_status_id=mention['id'],
-                    filename=f'imgs\\{mention["id"]}.jpg',
+                    filename=back_im_dir,
                 )
 
                 setLastID(id=mention['id'])
@@ -195,8 +203,8 @@ def main():
                 print(mention)
 
                 # delete imgs
-                remove(f'imgs\\{mention["user_id"]}.jpg')
-                remove(f'imgs\\{mention["id"]}.jpg')
+                os.remove(pp_dir)
+                os.remove(back_im_dir)
 
         print("Sleeping for a minute...")
         sleep(SLEEP*60)
