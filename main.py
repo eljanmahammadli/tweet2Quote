@@ -7,12 +7,14 @@ from dotenv import load_dotenv
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 load_dotenv()
-curr_dir = os.path.abspath(os.getcwd())
 
 SLEEP = int(os.environ['SLEEP'])
 SCREEN_NAME = os.environ['SCREEN_NAME']
 TEMPLATE_NUM = os.environ['TEMPLATE_NUM']
-template = os.path.join(curr_dir, 'imgs', f'template{TEMPLATE_NUM}.jpg')
+
+curr_dir = os.path.abspath(os.getcwd())
+txt_dir = os.path.join(curr_dir, 'lastId.txt')
+temp_dir = os.path.join(curr_dir, 'imgs', f'template{TEMPLATE_NUM}.jpg')
 fonts_dir = os.path.join(curr_dir, 'fonts')
 
 
@@ -32,13 +34,13 @@ def auth_twitter():
 
 
 def getLastID():
-    with open('lastId.txt') as f:
+    with open(txt_dir) as f:
         lines = f.readlines()
     return str(lines[0])
 
 
 def setLastID(id):
-    with open('lastId.txt', 'w') as f:
+    with open(txt_dir, 'w') as f:
         f.write(str(id))
 
 
@@ -57,7 +59,8 @@ def getInfo(api):
                      'text': mention.full_text,
                      'user_name': mention.user.name,
                      'user_screen_name': mention.user.screen_name,
-                     'img_url': mention.user.profile_image_url.replace('_normal', '')})
+                     'img_url': mention.user.profile_image_url.replace('_normal', '')
+                     })
 
     return info
 
@@ -91,7 +94,7 @@ def textWrap(text, font, max_width):
 
 def getLines(text):
     # open the background file
-    img = Image.open(template)
+    img = Image.open(temp_dir)
 
     # size() returns a tuple of (width, height)
     image_size = img.size
@@ -124,7 +127,7 @@ def drawImage(mention):
     # width = 1080
     # height = 1080
     # img = Image.new('RGB', (width, height), color='black')
-    bg = Image.open(template)
+    bg = Image.open(temp_dir)
 
     imgDraw = ImageDraw.Draw(bg)
 
@@ -211,4 +214,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # test()
